@@ -1,4 +1,4 @@
-Welcome to your new TanStack app! 
+HabitTracker - Frontend
 
 # Getting Started
 
