@@ -1,14 +1,11 @@
 package com.fais.HabitTracker.domain.services;
 
 import com.fais.HabitTracker.domain.models.User;
-import com.fais.HabitTracker.domain.ports.in.UserPort;
 import com.fais.HabitTracker.domain.ports.out.UserRepositoryPort;
 import com.fais.HabitTracker.exceptions.UserAlreadyExistsException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -39,7 +36,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException("User exsist");
         }
 
-        User newUser = new User(null, username, passwordEncoder.encode(password));
+        User newUser = new User(username, passwordEncoder.encode(password));
         return userRepositoryPort.save(newUser);
     }
 

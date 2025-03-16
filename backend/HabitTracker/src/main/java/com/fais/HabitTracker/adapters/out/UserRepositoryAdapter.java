@@ -17,7 +17,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     @Override
     public Optional<User> findUserByUsername(String username) {
-        return userMongoRepository.findById(username);
+        return userMongoRepository.getUserByUsername(username);
     }
 
     @Override
