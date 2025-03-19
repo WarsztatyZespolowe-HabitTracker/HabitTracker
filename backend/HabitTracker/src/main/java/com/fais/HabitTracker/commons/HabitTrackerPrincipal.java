@@ -8,7 +8,6 @@ import java.security.Principal;
 import java.util.Optional;
 import java.util.function.Function;
 
-//@Getter
 public record HabitTrackerPrincipal(@Getter String id, Principal principal) implements Principal {
 
     public static HabitTrackerPrincipal create(Principal principal, Function<String, Optional<User>> userProvider) {
@@ -31,9 +30,5 @@ public record HabitTrackerPrincipal(@Getter String id, Principal principal) impl
     @Override
     public String getName() {
         return principal.getName();
-    }
-
-    public String getId() {
-        return id;
     }
 }

@@ -11,13 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/dummy")
+@RequiredArgsConstructor
 public class DummyController implements SpringPrincipalSupport {
 
     private final UserRepositoryPort userRepositoryPort;
 
-    public DummyController(UserRepositoryPort userRepositoryPort) {
-        this.userRepositoryPort = userRepositoryPort;
-    }
 
     @GetMapping()
     public ResponseEntity<?> dummy() {

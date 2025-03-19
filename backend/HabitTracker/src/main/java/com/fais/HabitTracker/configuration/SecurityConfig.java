@@ -19,14 +19,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
-
-    public SecurityConfig(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
