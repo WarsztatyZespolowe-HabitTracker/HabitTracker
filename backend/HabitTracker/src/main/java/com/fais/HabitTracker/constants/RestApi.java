@@ -8,5 +8,4 @@ public class RestApi {
 
     private final static String API = "/api";
     public final static String AUTH_API = API + "/auth";
-    public final static String LOGOUT_API = AUTH_API + "/logout";
 }
