@@ -6,6 +6,7 @@ import com.fais.HabitTracker.exceptions.UserAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 
@@ -38,6 +39,12 @@ public class UserServiceImpl implements UserService {
 
         User newUser = new User(username, passwordEncoder.encode(password));
         return userRepositoryPort.save(newUser);
+    }
+
+    @Override
+    public boolean validateUserLogin(String username, String password) {
+        Optional<User> userByUsername = userRepositoryPort.findUserByUsername(username);
+        return userByUsername.isPresent() && passwordEncoder.matches(password, userByUsername.get().getPassword());
     }
 
 }
