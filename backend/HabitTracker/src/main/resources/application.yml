@@ -10,4 +10,5 @@ spring:
       password: admin
   data:
     mongodb:
-      uri: mongodb://localhost:27017/mydatabase2
+      uri: mongodb+srv://${DB_USERNAME}:${DB_PASSWORD}@habittracker.zdiec.mongodb.net
+      database: ${DB_NAME}
