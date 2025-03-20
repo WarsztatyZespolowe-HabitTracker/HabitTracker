@@ -19,19 +19,14 @@ public class AuthController {
 
     private final UserService userService;
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello";
-    }
-
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
         Optional<User> registeredUser = userService.registerUser(user.getUsername(), user.getPassword());
 
         if (registeredUser.isPresent()) {
-            return ResponseEntity.ok("Użytkownik został zarejestrowany.");
+            return ResponseEntity.ok("Users registered successfully");
         } else {
-            return ResponseEntity.badRequest().body("Błąd: Użytkownik o podanej nazwie już istnieje.");
+            return ResponseEntity.badRequest().body("Users not registered successfully");
         }
     }
 

@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(RestApi.AUTH_API + "/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(AbstractHttpConfigurer::disable) // Wyłączenie logowania przez formularz
+                .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable);
 
         return http.build();
