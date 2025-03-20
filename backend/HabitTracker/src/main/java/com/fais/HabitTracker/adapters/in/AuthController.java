@@ -3,14 +3,14 @@ package com.fais.HabitTracker.adapters.in;
 
 import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
 import com.fais.HabitTracker.constants.RestApi;
+import com.fais.HabitTracker.domain.models.User;
 import com.fais.HabitTracker.domain.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(RestApi.AUTH_API)
@@ -19,13 +19,19 @@ public class AuthController {
 
     private final UserService userService;
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello";
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRequestDTO userRequestDTO) {
-        try{
-            userService.registerUser(userRequestDTO.username(), userRequestDTO.password());
-            return ResponseEntity.ok().build();
-        }catch (Exception e){
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> register(@RequestBody User user) {
+        Optional<User> registeredUser = userService.registerUser(user.getUsername(), user.getPassword());
+
+        if (registeredUser.isPresent()) {
+            return ResponseEntity.ok("Użytkownik został zarejestrowany.");
+        } else {
+            return ResponseEntity.badRequest().body("Błąd: Użytkownik o podanej nazwie już istnieje.");
         }
     }
 
