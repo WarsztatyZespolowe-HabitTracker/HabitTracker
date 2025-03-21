@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
@@ -27,12 +28,9 @@ public class User implements UserDetails {
     private String username;
     private String password;
     private Role role = Role.USER;
-
-
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    private boolean active = true;
+    private Date createdAt = new Date();
+    private Date deletedAt;
 
     @Override
     public String getUsername() {
@@ -51,21 +49,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return active;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return active;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return active;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return active;
     }
 }

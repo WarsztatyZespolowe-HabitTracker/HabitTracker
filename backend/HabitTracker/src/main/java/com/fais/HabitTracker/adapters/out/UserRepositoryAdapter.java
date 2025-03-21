@@ -5,6 +5,7 @@ import com.fais.HabitTracker.domain.models.User;
 import com.fais.HabitTracker.domain.ports.out.UserRepositoryPort;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public class UserRepositoryAdapter implements UserRepositoryPort {
@@ -23,5 +24,15 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
     @Override
     public User save(User user) {
         return userMongoRepository.save(user);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userMongoRepository.findAllByActiveTrueOrderByCreatedAtDesc();
+    }
+
+    @Override
+    public Optional<User> findById(String id) {
+        return userMongoRepository.findById(id);
     }
 }

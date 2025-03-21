@@ -1,3 +1,5 @@
 package com.fais.HabitTracker.adapters.in.dto.register;
 
-public record UserResponseDTO(String username) {}
+import com.fais.HabitTracker.enums.Role;
+
+public record UserResponseDTO(String id, String username, boolean active, Role role) {}
