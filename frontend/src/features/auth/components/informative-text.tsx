@@ -1,19 +1,19 @@
 import type { LinkProps } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 
-interface InformativeTextProps {
+interface AuthInformativeTextProps {
 	text: string;
 	linkText: string;
 	linkTo: LinkProps["to"];
 }
 
-export function InformativeText({
+export function AuthInformativeText({
 	text,
 	linkText,
 	linkTo,
-}: InformativeTextProps) {
+}: AuthInformativeTextProps) {
 	return (
-		<span className="space-x-24">
+		<span>
 			{text}{" "}
 			<Link to={linkTo} className="underline underline-offset-2 font-medium">
 				{linkText}

@@ -1,5 +1,6 @@
-import { AuthHeading } from "@/components/auth/auth-heading";
-import { InformativeText } from "@/components/auth/informative-text";
+import { AuthForm } from "@/features/auth/components/form";
+import { AuthHeading } from "@/features/auth/components/heading";
+import { AuthInformativeText } from "@/features/auth/components/informative-text";
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_auth/sign-in")({
@@ -14,7 +15,13 @@ function SignInPage() {
 				description="Enter your details to sign in."
 			/>
 
-			<InformativeText
+			<AuthForm
+				submitText="Sign in"
+				submitLoadingText="Signing in..."
+				onSubmit={console.log}
+			/>
+
+			<AuthInformativeText
 				text="Don't have an account?"
 				linkText="Sign up"
 				linkTo="/sign-up"
