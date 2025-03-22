@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	Form,
@@ -11,34 +10,36 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	credentialsSchema,
+	type AuthCredentials,
+} from "@/features/auth/schemas/credentials-schema";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+
+const DEFAULT_ERROR_MESSAGE = "Something went wrong. Please try again.";
 
 interface AuthFormProps {
 	submitText: string;
-	submitLoadingText: string;
-	onSubmit: (data: FormValues) => void;
+	onSubmit: (data: AuthCredentials) => void;
+	error?: Error | null;
+	isPending?: boolean;
 }
-
-const formSchema = z.object({
-	username: z.string().nonempty("Username is required"),
-	password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 export function AuthForm({
 	onSubmit,
-	submitLoadingText,
 	submitText,
+	error,
+	isPending,
 }: AuthFormProps) {
 	const form = useForm({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(credentialsSchema),
 		defaultValues: {
 			username: "",
 			password: "",
 		},
 	});
 
-	const isSubmitting = form.formState.isSubmitting;
+	const isLoading = isPending || form.formState.isSubmitting;
 
 	return (
 		<Form {...form}>
@@ -72,8 +73,15 @@ export function AuthForm({
 						</FormItem>
 					)}
 				/>
-				<Button disabled={isSubmitting} type="submit">
-					{isSubmitting ? submitLoadingText : submitText}
+				{error && (
+					<Alert variant="destructive">
+						<AlertDescription>
+							{error.message ?? DEFAULT_ERROR_MESSAGE}
+						</AlertDescription>
+					</Alert>
+				)}
+				<Button isLoading={isLoading} type="submit">
+					{submitText}
 				</Button>
 			</form>
 		</Form>
