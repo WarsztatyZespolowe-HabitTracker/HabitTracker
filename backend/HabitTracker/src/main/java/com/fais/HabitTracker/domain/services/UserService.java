@@ -5,6 +5,7 @@ import com.fais.HabitTracker.adapters.in.dto.register.UserResponseDTO;
 import com.fais.HabitTracker.domain.models.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     Optional<User> registerUser(String username, String password);

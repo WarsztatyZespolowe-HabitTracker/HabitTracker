@@ -40,7 +40,9 @@ public class UserServiceImpl implements UserService {
         if (existingUser.isPresent()) {
             return Optional.empty();
         }
-        User user = new User(null, username, password);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
         return Optional.of(userRepositoryPort.save(user));
     }
 
