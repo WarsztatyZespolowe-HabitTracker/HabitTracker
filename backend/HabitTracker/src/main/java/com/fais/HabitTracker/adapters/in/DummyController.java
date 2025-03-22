@@ -5,6 +5,7 @@ import com.fais.HabitTracker.domain.ports.out.UserRepositoryPort;
 import com.fais.HabitTracker.domain.services.SpringPrincipalSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,5 +23,11 @@ public class DummyController implements SpringPrincipalSupport {
         HabitTrackerPrincipal principal = HabitTrackerPrincipal.create(getPrincipal(true), userRepositoryPort::findUserByUsername);
         String id = principal.getId();
         return ResponseEntity.ok(id);
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> dummyForAdmin() {
+        return ResponseEntity.ok("You are admin!");
     }
 }

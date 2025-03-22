@@ -19,7 +19,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userRepositoryPort.findUserByUsername(username)
                 .map(user -> User.withUsername(user.getUsername())
                         .password(user.getPassword())
-                        .roles("USER")
+                        .roles(user.getRole().getAuthority())
+                        .disabled(!user.isActive())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("Username " + username + " not found!"));
     }
