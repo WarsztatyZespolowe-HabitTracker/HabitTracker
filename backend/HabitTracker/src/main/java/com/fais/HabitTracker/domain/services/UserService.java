@@ -7,7 +7,7 @@ import com.fais.HabitTracker.domain.models.User;
 import java.util.List;
 
 public interface UserService {
-    User registerUser(String username, String password);
+    Optional<User> registerUser(String username, String password);
 
     boolean validateUserLogin(String username, String password);
 

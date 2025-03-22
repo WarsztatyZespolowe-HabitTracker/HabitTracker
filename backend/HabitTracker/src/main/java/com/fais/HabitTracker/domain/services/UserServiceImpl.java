@@ -35,18 +35,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    public User registerUser(String username, String password) {
-        validateInput(username, password);
-
-        if (userRepositoryPort.findUserByUsername(username).isPresent()) {
-            throw new UserAlreadyExistsException("User exsist");
+    public Optional<User> registerUser(String username, String password) {
+        Optional<User> existingUser = userRepositoryPort.findUserByUsername(username);
+        if (existingUser.isPresent()) {
+            return Optional.empty();
         }
-
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(passwordEncoder.encode(password));
-        return userRepositoryPort.save(newUser);
+        User user = new User(null, username, password);
+        return Optional.of(userRepositoryPort.save(user));
     }
+
 
     @Override
     public boolean validateUserLogin(String username, String password) {
