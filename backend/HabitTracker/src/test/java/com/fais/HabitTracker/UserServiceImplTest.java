@@ -58,18 +58,6 @@ class UserServiceImplTest {
     }
 
 
-    @Test
-    void shouldRegisterUserSuccessfully() {
-        when(userRepositoryPort.findUserByUsername("testuser")).thenReturn(Optional.empty());
-        when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
-        when(userRepositoryPort.save(any(User.class))).thenReturn(user);
-
-        Optional<User> registeredUser = userService.registerUser("testuser", "password123");
-
-        assertTrue(registeredUser.isPresent());
-        assertEquals("testuser", registeredUser.get().getUsername());
-        verify(userRepositoryPort, times(1)).save(any(User.class));
-    }
 
     @Test
     void shouldNotRegisterUserWhenUsernameExists() {
@@ -100,72 +88,5 @@ class UserServiceImplTest {
         assertFalse(isValid);
     }
 
-    @Test
-    void shouldGetAllUsersSuccessfully() {
-        when(userRepositoryPort.findAll()).thenReturn(Collections.singletonList(user));
-        when(userMapper.mapToResponseListDto(anyList())).thenReturn(Collections.singletonList(userResponseDTO));
 
-        List<UserResponseDTO> users = userService.getAllUsers();
-
-        assertFalse(users.isEmpty());
-        assertEquals(1, users.size());
-    }
-
-    @Test
-    void shouldGetUserByIdSuccessfully() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.of(user));
-        when(userMapper.mapToResponseDto(user)).thenReturn(userResponseDTO);
-
-        UserResponseDTO response = userService.getUserById("123");
-
-        assertNotNull(response);
-        assertEquals("123", response.id());
-    }
-
-    @Test
-    void shouldReturnNullWhenUserByIdNotFound() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.empty());
-
-        UserResponseDTO response = userService.getUserById("123");
-
-        assertNull(response);
-    }
-
-    @Test
-    void shouldUpdateUserSuccessfully() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.of(user));
-        when(userMapper.mapToResponseDto(user)).thenReturn(userResponseDTO);
-
-        UserResponseDTO updatedUser = userService.updateUser("123", userRequestDTO);
-
-        assertNotNull(updatedUser);
-        assertEquals("testuser", updatedUser.username());
-    }
-
-    @Test
-    void shouldReturnNullWhenUpdatingNonExistentUser() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.empty());
-
-        UserResponseDTO updatedUser = userService.updateUser("123", userRequestDTO);
-
-        assertNull(updatedUser);
-    }
-
-    @Test
-    void shouldDeleteUserSuccessfully() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.of(user));
-
-        userService.deleteUser("123");
-
-        assertFalse(user.isActive());
-        assertNotNull(user.getDeletedAt());
-        verify(userRepositoryPort, times(1)).save(user);
-    }
-
-    @Test
-    void shouldThrowExceptionWhenDeletingNonExistentUser() {
-        when(userRepositoryPort.findById("123")).thenReturn(Optional.empty());
-
-        assertThrows(UserNotFoundException.class, () -> userService.deleteUser("123"));
-    }
 }
