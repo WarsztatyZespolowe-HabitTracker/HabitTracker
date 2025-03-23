@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers(RestApi.AUTH_API + "/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .cors(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
