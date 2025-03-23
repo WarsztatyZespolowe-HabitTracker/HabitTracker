@@ -8,45 +8,46 @@ import { zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
 
 const searchSchema = z.object({
-	newAccount: z.boolean().optional(),
+  newAccount: z.boolean().optional(),
 });
 
 export const Route = createFileRoute("/_auth/sign-in")({
-	validateSearch: zodValidator(searchSchema),
-	component: SignInPage,
+  validateSearch: zodValidator(searchSchema),
+  component: SignInPage,
 });
 
 function SignInPage() {
-	const { isPending, mutate, error } = useSignIn();
-	const { newAccount } = Route.useSearch();
+  const { isPending, mutate, isError } = useSignIn();
+  const { newAccount } = Route.useSearch();
 
-	return (
-		<>
-			<AuthHeading
-				heading="Sign in"
-				description="Enter your details to sign in."
-			/>
+  return (
+    <>
+      <AuthHeading
+        heading="Sign in"
+        description="Enter your details to sign in."
+      />
 
-			{newAccount && (
-				<Alert variant="informative">
-					<AlertDescription>
-						Account created successfully. You can now sign in.
-					</AlertDescription>
-				</Alert>
-			)}
+      {newAccount && (
+        <Alert variant="informative">
+          <AlertDescription>
+            Account created successfully. You can now sign in.
+          </AlertDescription>
+        </Alert>
+      )}
 
-			<AuthForm
-				submitText="Sign in"
-				onSubmit={mutate}
-				error={error}
-				isPending={isPending}
-			/>
+      <AuthForm
+        submitText="Sign in"
+        onSubmit={mutate}
+        isPending={isPending}
+        isError={isError}
+        errorMessage="Could not find an account with the provided credentials."
+      />
 
-			<AuthInformativeText
-				text="Don't have an account?"
-				linkText="Sign up"
-				linkTo="/sign-up"
-			/>
-		</>
-	);
+      <AuthInformativeText
+        text="Don't have an account?"
+        linkText="Sign up"
+        linkTo="/sign-up"
+      />
+    </>
+  );
 }
