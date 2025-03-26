@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserLogicTest {
 
     @Mock
     private UserRepositoryPort userRepositoryPort;
@@ -44,7 +44,6 @@ class UserServiceImplTest {
     private UserResponseDTO userResponseDTO;
 
     @BeforeEach
-
     void setUp() {
         user = new User();
         user.setId("123");
@@ -62,26 +61,22 @@ class UserServiceImplTest {
 
     @Test
     void shouldNotRegisterUserWhenEmptyPassword() {
+        when(userRepositoryPort.findUserByUsername("testuser")).thenReturn(Optional.empty());
 
-    UserRequestDTO request = new UserRequestDTO("testuser", "");
-    when(usermapper.toEntity(request)).thenReturn(null);
+        Optional<User> registeredUser = userService.registerUser("testuser", "");
 
-    assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
-
-    verify(userRepositoryPort, never()).save(any(User.class));
-
+        assertTrue(registeredUser.isEmpty());
+        verify(userRepositoryPort, never()).save(any(User.class));
     }
 
     @Test
     void shouldNotRegisterUserWhenEmptyName() {
+        when(userRepositoryPort.findUserByUsername("")).thenReturn(Optional.empty());
 
-    UserRequestDTO request = new UserRequestDTO("", "password123");
-    when(usermapper.toEntity(request)).thenReturn(null);
+        Optional<User> registeredUser = userService.registerUser("", "password123");
 
-    assertThrows(IllegalArgumentException.class, () -> userService.registerUser(request));
-    
-    verify(userRepositoryPort, never()).save(any(User.class));
-
+        assertTrue(registeredUser.isEmpty());
+        verify(userRepositoryPort, never()).save(any(User.class));
     }
 
     @Test
@@ -97,19 +92,15 @@ class UserServiceImplTest {
         verify(userRepositoryPort, times(1)).save(any(User.class));
     }
 
-// login   
-
     @Test
     void shouldNotLoginWhenPasswordIsWrong() {
+        when(userRepositoryPort.findUserByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("wrongpassword", user.getPassword())).thenReturn(false);
 
-    UserRequestDTO request = new UserRequestDTO("testuser", "wrongpassword");
-    when(userRepositoryPort.findByUsername("testuser")).thenReturn(Optional.of(user));
-    when(passwordEncoder.matches("wrongpassword",user.getPassword())).thenReturn("false");
+        boolean isValid = userService.validateUserLogin("testuser", "wrongpassword");
 
-    assertThrows(IllegalArgumentException.class, () -> userService.loginUser(request));
-
-    verify(userRepositoryPort, never()).save(any(User.class));
-
+        assertFalse(isValid);
+        verify(userRepositoryPort, never()).save(any(User.class));
     }
 
 
@@ -118,8 +109,8 @@ class UserServiceImplTest {
     // void shouldNotRegisterUserWhenUsernameExists() {
 
     // void shouldValidateUserLoginSuccessfully() {
-   
+
     // void shouldNotValidateUserLoginWhenUserNotFound() {
-   
+
 }
 
