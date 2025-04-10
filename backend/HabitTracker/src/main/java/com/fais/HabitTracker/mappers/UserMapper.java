@@ -1,8 +1,8 @@
-package com.fais.HabitTracker.domain.mapper;
+package com.fais.HabitTracker.mappers;
 
-import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
-import com.fais.HabitTracker.adapters.in.dto.register.UserResponseDTO;
-import com.fais.HabitTracker.domain.models.User;
+import com.fais.HabitTracker.dto.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserResponseDTO;
+import com.fais.HabitTracker.models.User;
 import org.mapstruct.Mapper;
 
 import java.util.List;

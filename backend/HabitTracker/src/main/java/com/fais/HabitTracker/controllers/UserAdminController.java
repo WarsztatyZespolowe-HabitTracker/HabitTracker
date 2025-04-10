@@ -1,9 +1,9 @@
-package com.fais.HabitTracker.adapters.in;
+package com.fais.HabitTracker.controllers;
 
-import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
-import com.fais.HabitTracker.adapters.in.dto.register.UserResponseDTO;
+import com.fais.HabitTracker.dto.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserResponseDTO;
 import com.fais.HabitTracker.constants.RestApi;
-import com.fais.HabitTracker.domain.services.UserService;
+import com.fais.HabitTracker.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

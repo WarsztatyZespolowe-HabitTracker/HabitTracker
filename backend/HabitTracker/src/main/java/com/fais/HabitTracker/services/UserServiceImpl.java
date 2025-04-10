@@ -1,12 +1,11 @@
-package com.fais.HabitTracker.domain.services;
+package com.fais.HabitTracker.services;
 
-import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
-import com.fais.HabitTracker.adapters.in.dto.register.UserResponseDTO;
-import com.fais.HabitTracker.domain.mapper.UserMapper;
-import com.fais.HabitTracker.domain.models.User;
-import com.fais.HabitTracker.domain.ports.out.UserRepositoryPort;
-import com.fais.HabitTracker.exceptions.UserAlreadyExistsException;
+import com.fais.HabitTracker.dto.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserResponseDTO;
 import com.fais.HabitTracker.exceptions.UserNotFoundException;
+import com.fais.HabitTracker.mappers.UserMapper;
+import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.repository.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private static final int MIN_PASSWORD_LENGTH = 6;
     private static final int MAX_PASSWORD_LENGTH = 20;
 
-    private final UserRepositoryPort userRepositoryPort;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
@@ -36,45 +35,45 @@ public class UserServiceImpl implements UserService {
 
 
     public Optional<User> registerUser(String username, String password) {
-        Optional<User> existingUser = userRepositoryPort.findUserByUsername(username);
+        Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
             return Optional.empty();
         }
         User user = new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        return Optional.of(userRepositoryPort.save(user));
+        return Optional.of(userRepository.save(user));
     }
 
 
     @Override
     public boolean validateUserLogin(String username, String password) {
-        Optional<User> userByUsername = userRepositoryPort.findUserByUsername(username);
+        Optional<User> userByUsername = userRepository.findByUsername(username);
         return userByUsername.isPresent() && passwordEncoder.matches(password, userByUsername.get().getPassword());
     }
 
     @Override
     public List<UserResponseDTO> getAllUsers() {
-        List<User> all = userRepositoryPort.findAll();
+        List<User> all = userRepository.findAll();
         return userMapper.mapToResponseListDto(all);
     }
 
     @Override
     public UserResponseDTO getUserById(String id) {
-        Optional<User> byId = userRepositoryPort.findById(id);
+        Optional<User> byId = userRepository.findById(id);
         return byId.map(userMapper::mapToResponseDto).orElse(null);
     }
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO request) {
         User user = userMapper.mapRequestToEntity(request);
-        User savedUser = userRepositoryPort.save(user);
+        User savedUser = userRepository.save(user);
         return userMapper.mapToResponseDto(savedUser);
     }
 
     @Override
     public UserResponseDTO updateUser(String id, UserRequestDTO request) {
-        Optional<User> byId = userRepositoryPort.findById(id);
+        Optional<User> byId = userRepository.findById(id);
         if (byId.isPresent()) {
             User user = byId.get();
 
@@ -94,7 +93,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(String id) {
-        Optional<User> byId = userRepositoryPort.findById(id);
+        Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty()) {
             throw new UserNotFoundException(String.format("User with id %s not found!", id));
         }
@@ -103,7 +102,7 @@ public class UserServiceImpl implements UserService {
         user.setActive(false);
         user.setDeletedAt(new Date());
 
-        userRepositoryPort.save(user);
+        userRepository.save(user);
     }
 
 }
