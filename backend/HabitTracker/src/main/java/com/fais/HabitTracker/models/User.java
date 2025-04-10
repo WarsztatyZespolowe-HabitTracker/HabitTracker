@@ -1,4 +1,4 @@
-package com.fais.HabitTracker.domain.models;
+package com.fais.HabitTracker.models;
 
 
 import com.fais.HabitTracker.enums.Role;

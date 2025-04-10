@@ -1,8 +1,8 @@
-package com.fais.HabitTracker.domain.services;
+package com.fais.HabitTracker.services;
 
-import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
-import com.fais.HabitTracker.adapters.in.dto.register.UserResponseDTO;
-import com.fais.HabitTracker.domain.models.User;
+import com.fais.HabitTracker.dto.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserResponseDTO;
+import com.fais.HabitTracker.models.User;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.fais.HabitTracker.domain.services;
+package com.fais.HabitTracker.services;
 
 import com.fais.HabitTracker.exceptions.ForbiddenException;
 import com.fais.HabitTracker.exceptions.UnAuthorizedException;

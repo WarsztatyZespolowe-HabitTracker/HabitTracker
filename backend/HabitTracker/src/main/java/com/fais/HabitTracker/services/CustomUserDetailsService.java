@@ -1,6 +1,6 @@
-package com.fais.HabitTracker.domain.services;
+package com.fais.HabitTracker.services;
 
-import com.fais.HabitTracker.domain.ports.out.UserRepositoryPort;
+import com.fais.HabitTracker.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepositoryPort userRepositoryPort;
+    private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepositoryPort.findUserByUsername(username)
+        return userRepository.findByUsername(username)
                 .map(user -> User.withUsername(user.getUsername())
                         .password(user.getPassword())
                         .roles(user.getRole().getAuthority())

@@ -1,7 +1,7 @@
 package com.fais.HabitTracker.configuration;
 
 import com.fais.HabitTracker.constants.RestApi;
-import com.fais.HabitTracker.domain.services.CustomUserDetailsService;
+import com.fais.HabitTracker.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

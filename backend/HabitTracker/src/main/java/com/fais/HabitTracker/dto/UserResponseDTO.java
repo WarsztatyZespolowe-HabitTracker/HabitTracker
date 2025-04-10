@@ -1,4 +1,4 @@
-package com.fais.HabitTracker.adapters.in.dto.register;
+package com.fais.HabitTracker.dto;
 
 import com.fais.HabitTracker.enums.Role;
 

@@ -1,10 +1,10 @@
-package com.fais.HabitTracker.adapters.in;
+package com.fais.HabitTracker.controllers;
 
 
-import com.fais.HabitTracker.adapters.in.dto.register.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserRequestDTO;
 import com.fais.HabitTracker.constants.RestApi;
-import com.fais.HabitTracker.domain.models.User;
-import com.fais.HabitTracker.domain.services.UserService;
+import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
