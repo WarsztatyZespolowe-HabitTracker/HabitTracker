@@ -1,5 +1,5 @@
 package com.fais.HabitTracker.models;
-
+// TODO: please consider moving all that user-related staff to dedicated package
 
 import com.fais.HabitTracker.enums.Role;
 import lombok.AllArgsConstructor;
@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
+// there are expicit accessors for most fields - maybe this annotation could be avoided?
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +30,7 @@ public class User implements UserDetails {
     private String password;
     private Role role = Role.USER;
     private boolean active = true;
+    // TODO: why not to use Instant?
     private Date createdAt = new Date();
     private Date deletedAt;
 

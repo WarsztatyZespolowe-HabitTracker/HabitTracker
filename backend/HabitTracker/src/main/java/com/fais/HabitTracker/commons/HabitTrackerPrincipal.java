@@ -1,4 +1,6 @@
 package com.fais.HabitTracker.commons;
+// TODO: this is security related - maybe it can be in its package?
+// with other security configs etc?
 
 import com.fais.HabitTracker.models.User;
 import com.fais.HabitTracker.exceptions.UnAuthorizedException;
