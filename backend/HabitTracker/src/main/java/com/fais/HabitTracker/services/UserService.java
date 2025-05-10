@@ -20,5 +20,7 @@ public interface UserService {
 
     UserResponseDTO updateUser(String id, UserRequestDTO request);
 
+    UserResponseDTO updateUserByName(String username, UserRequestDTO request);
+
     void deleteUser(String id);
 }

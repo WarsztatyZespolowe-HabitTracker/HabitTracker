@@ -16,6 +16,7 @@ import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardUsersImport } from './routes/_dashboard.users'
 import { Route as DashboardHabitsImport } from './routes/_dashboard.habits'
+import { Route as DashboardEditUserdataImport } from './routes/_dashboard.editUserdata'
 import { Route as AuthSignUpImport } from './routes/_auth.sign-up'
 import { Route as AuthSignInImport } from './routes/_auth.sign-in'
 
@@ -46,6 +47,12 @@ const DashboardUsersRoute = DashboardUsersImport.update({
 const DashboardHabitsRoute = DashboardHabitsImport.update({
   id: '/habits',
   path: '/habits',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardEditUserdataRoute = DashboardEditUserdataImport.update({
+  id: '/editUserdata',
+  path: '/editUserdata',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -100,6 +107,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignUpImport
       parentRoute: typeof AuthImport
     }
+    '/_dashboard/editUserdata': {
+      id: '/_dashboard/editUserdata'
+      path: '/editUserdata'
+      fullPath: '/editUserdata'
+      preLoaderRoute: typeof DashboardEditUserdataImport
+      parentRoute: typeof DashboardImport
+    }
     '/_dashboard/habits': {
       id: '/_dashboard/habits'
       path: '/habits'
@@ -132,11 +146,13 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface DashboardRouteChildren {
+  DashboardEditUserdataRoute: typeof DashboardEditUserdataRoute
   DashboardHabitsRoute: typeof DashboardHabitsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardEditUserdataRoute: DashboardEditUserdataRoute,
   DashboardHabitsRoute: DashboardHabitsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
 }
@@ -150,6 +166,7 @@ export interface FileRoutesByFullPath {
   '': typeof DashboardRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/editUserdata': typeof DashboardEditUserdataRoute
   '/habits': typeof DashboardHabitsRoute
   '/users': typeof DashboardUsersRoute
 }
@@ -159,6 +176,7 @@ export interface FileRoutesByTo {
   '': typeof DashboardRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/editUserdata': typeof DashboardEditUserdataRoute
   '/habits': typeof DashboardHabitsRoute
   '/users': typeof DashboardUsersRoute
 }
@@ -170,15 +188,30 @@ export interface FileRoutesById {
   '/_dashboard': typeof DashboardRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
+  '/_dashboard/editUserdata': typeof DashboardEditUserdataRoute
   '/_dashboard/habits': typeof DashboardHabitsRoute
   '/_dashboard/users': typeof DashboardUsersRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/sign-in' | '/sign-up' | '/habits' | '/users'
+  fullPaths:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/sign-up'
+    | '/editUserdata'
+    | '/habits'
+    | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/sign-in' | '/sign-up' | '/habits' | '/users'
+  to:
+    | '/'
+    | ''
+    | '/sign-in'
+    | '/sign-up'
+    | '/editUserdata'
+    | '/habits'
+    | '/users'
   id:
     | '__root__'
     | '/'
@@ -186,6 +219,7 @@ export interface FileRouteTypes {
     | '/_dashboard'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
+    | '/_dashboard/editUserdata'
     | '/_dashboard/habits'
     | '/_dashboard/users'
   fileRoutesById: FileRoutesById
@@ -231,6 +265,7 @@ export const routeTree = rootRoute
     "/_dashboard": {
       "filePath": "_dashboard.tsx",
       "children": [
+        "/_dashboard/editUserdata",
         "/_dashboard/habits",
         "/_dashboard/users"
       ]
@@ -242,6 +277,10 @@ export const routeTree = rootRoute
     "/_auth/sign-up": {
       "filePath": "_auth.sign-up.tsx",
       "parent": "/_auth"
+    },
+    "/_dashboard/editUserdata": {
+      "filePath": "_dashboard.editUserdata.tsx",
+      "parent": "/_dashboard"
     },
     "/_dashboard/habits": {
       "filePath": "_dashboard.habits.tsx",

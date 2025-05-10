@@ -92,6 +92,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO updateUserByName(String username, UserRequestDTO request) {
+        Optional<User> myuser = userRepository.findByUsername(username);
+        if (myuser.isPresent()) {
+            User user = myuser.get();
+
+            if (StringUtils.isNotBlank(request.username())) {
+                user.setUsername(request.username());
+            }
+
+            if (StringUtils.isNotBlank(request.password())) {
+                user.setPassword(passwordEncoder.encode(request.password())); // <- nie zapomnij o hashowaniu!
+            }
+
+            // ZAPIS DO BAZY:
+            userRepository.save(user);
+
+            return userMapper.mapToResponseDto(user);
+        }
+
+        return null;
+    }
+
+    @Override
     public void deleteUser(String id) {
         Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty()) {
@@ -104,5 +127,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
+
 
 }
