@@ -3,29 +3,18 @@ package com.fais.HabitTracker.mappers;
 import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
 import com.fais.HabitTracker.models.Habit;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-@Component
-public class HabitMapper {
-    public Habit mapRequestToEntity(HabitRequestDTO dto) {
-        return Habit.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .category(dto.getCategory())
-                .daysOfWeek(dto.getDaysOfWeek())
-                .userId(dto.getUserId())
-                .build();
-    }
+import java.util.List;
 
-    public HabitResponseDTO mapEntityToResponse(Habit habit, int streak) {
-        return HabitResponseDTO.builder()
-                .id(habit.getId())
-                .name(habit.getName())
-                .description(habit.getDescription())
-                .category(habit.getCategory())
-                .daysOfWeek(habit.getDaysOfWeek())
-                .streak(streak)
-                .history(habit.getHistory())
-                .build();
-    }
+@Mapper(componentModel = "spring")
+public interface HabitMapper {
+    Habit mapRequestToEntity(HabitRequestDTO dto);
+
+    @Mapping(target = "streak", source = "streak")
+    HabitResponseDTO mapEntityToResponse(Habit habit, int streak);
+
+    List<HabitResponseDTO> mapEntityListToResponseList(List<Habit> habits);
 }
