@@ -13,4 +13,6 @@ public interface HabitService {
     List<HabitResponseDTO> getHabitsForToday(String userId);
 
     int calculateStreak(String userId, String habitId);
+    
+    HabitResponseDTO markHabitAsSkipped(String userId, String habitId);
 }

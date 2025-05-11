@@ -35,4 +35,10 @@ public class HabitController {
         String userId = principal.getName();
         return habitService.getHabitsForToday(userId);
     }
+
+    @PutMapping("/{habitId}/skip")
+    public HabitResponseDTO markHabitAsSkipped(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        return habitService.markHabitAsSkipped(userId, habitId);
+    }
 }
