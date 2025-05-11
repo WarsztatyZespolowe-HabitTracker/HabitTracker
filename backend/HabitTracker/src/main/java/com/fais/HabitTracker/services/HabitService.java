@@ -15,4 +15,6 @@ public interface HabitService {
     int calculateStreak(String userId, String habitId);
     
     HabitResponseDTO markHabitAsSkipped(String userId, String habitId);
+    
+    HabitResponseDTO markHabitAsCompleted(String userId, String habitId);
 }

@@ -138,4 +138,51 @@ public class HabitServiceImpl implements HabitService {
         int streak = calculateStreak(userId, habitId);
         return habitMapper.mapEntityToResponse(savedHabit, streak);
     }
+
+    @Override
+    public HabitResponseDTO markHabitAsCompleted(String userId, String habitId) {
+        Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
+        
+        // Tworzymy nowy rekord historii z datą dzisiejszą
+        HabitHistory completedRecord = HabitHistory.builder()
+                .date(new Date())
+                .completed(true)
+                .skipped(false)
+                .build();
+        
+        // Jeśli lista historii nie istnieje, tworzymy nową
+        if (habit.getHistory() == null) {
+            habit.setHistory(new ArrayList<>());
+        }
+        
+        // Sprawdzamy czy już nie ma dzisiejszej daty
+        LocalDate today = LocalDate.now();
+        boolean hasEntryForToday = habit.getHistory().stream()
+                .anyMatch(h -> {
+                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    return historyDate.equals(today);
+                });
+        
+        if (!hasEntryForToday) {
+            habit.getHistory().add(completedRecord);
+        } else {
+            // Aktualizujemy istniejący wpis na dzisiaj
+            habit.getHistory().stream()
+                .filter(h -> {
+                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    return historyDate.equals(today);
+                })
+                .findFirst()
+                .ifPresent(h -> {
+                    h.setCompleted(true);
+                    h.setSkipped(false);
+                });
+        }
+        
+        Habit savedHabit = habitRepository.save(habit);
+        
+        int streak = calculateStreak(userId, habitId);
+        return habitMapper.mapEntityToResponse(savedHabit, streak);
+    }
 }

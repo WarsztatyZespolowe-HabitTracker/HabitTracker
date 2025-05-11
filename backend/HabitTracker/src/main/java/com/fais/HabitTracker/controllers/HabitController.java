@@ -41,4 +41,10 @@ public class HabitController {
         String userId = principal.getName();
         return habitService.markHabitAsSkipped(userId, habitId);
     }
+
+    @PutMapping("/{habitId}/complete")
+    public HabitResponseDTO markHabitAsCompleted(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        return habitService.markHabitAsCompleted(userId, habitId);
+    }
 }
