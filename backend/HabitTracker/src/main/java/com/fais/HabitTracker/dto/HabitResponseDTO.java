@@ -1,6 +1,6 @@
 package com.fais.HabitTracker.dto;
 
-import com.fais.HabitTracker.models.HabitHistory;
+import com.fais.HabitTracker.models.habit.HabitHistory;
 import lombok.Builder;
 import lombok.Data;
 

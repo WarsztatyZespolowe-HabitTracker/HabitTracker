@@ -1,4 +1,4 @@
-package com.fais.HabitTracker.models;
+package com.fais.HabitTracker.models.habit;
 
 import lombok.*;
 

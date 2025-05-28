@@ -1,6 +1,6 @@
-package com.fais.HabitTracker.commons;
+package com.fais.HabitTracker.security;
 
-import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.exceptions.UnAuthorizedException;
 import lombok.Getter;
 
