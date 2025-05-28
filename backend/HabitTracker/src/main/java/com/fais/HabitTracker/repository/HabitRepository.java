@@ -1,6 +1,6 @@
 package com.fais.HabitTracker.repository;
 
-import com.fais.HabitTracker.models.Habit;
+import com.fais.HabitTracker.models.habit.Habit;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

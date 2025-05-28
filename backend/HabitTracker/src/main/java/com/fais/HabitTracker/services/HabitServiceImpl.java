@@ -3,8 +3,8 @@ package com.fais.HabitTracker.services;
 import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
 import com.fais.HabitTracker.mappers.HabitMapper;
-import com.fais.HabitTracker.models.Habit;
-import com.fais.HabitTracker.models.HabitHistory;
+import com.fais.HabitTracker.models.habit.Habit;
+import com.fais.HabitTracker.models.habit.HabitHistory;
 import com.fais.HabitTracker.repository.HabitRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,7 +70,7 @@ public class HabitServiceImpl implements HabitService {
         history = history.stream()
                 .filter(record -> record.isCompleted() || record.isSkipped())
                 .sorted(Comparator.comparing(HabitHistory::getDate).reversed())
-                .collect(Collectors.toList());
+                .toList();
 
         int streak = 0;
         LocalDate expectedDate = LocalDate.now();

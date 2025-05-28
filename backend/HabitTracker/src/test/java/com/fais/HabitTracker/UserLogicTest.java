@@ -1,7 +1,7 @@
 package com.fais.HabitTracker;
 
 import com.fais.HabitTracker.enums.Role;
-import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.repository.UserRepository;
 import com.fais.HabitTracker.services.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,20 +48,18 @@ class UserLogicTest {
     void shouldNotRegisterUserWhenEmptyPassword() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.empty());
 
-        Optional<User> registeredUser = userService.registerUser("testuser", "");
+        User user = userService.registerUser("testuser", "");
 
-        assertTrue(registeredUser.isEmpty());
-        verify(userRepository, never()).save(any(User.class));
+        assertNull(user);
     }
 
     @Test
     void shouldNotRegisterUserWhenEmptyName() {
         when(userRepository.findByUsername("")).thenReturn(Optional.empty());
 
-        Optional<User> registeredUser = userService.registerUser("", "password123");
+        User user = userService.registerUser("", "password123");
 
-        assertTrue(registeredUser.isEmpty());
-        verify(userRepository, never()).save(any(User.class));
+        assertNull(user);
     }
 
     @Test
@@ -70,10 +68,10 @@ class UserLogicTest {
         when(passwordEncoder.encode("password123")).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        Optional<User> registeredUser = userService.registerUser("testuser", "password123");
+        User user = userService.registerUser("testuser", "password123");
 
-        assertTrue(registeredUser.isPresent());
-        assertEquals("testuser", registeredUser.get().getUsername());
+        assertNotNull(user);
+        assertEquals("testuser", user.getUsername());
         verify(userRepository, times(1)).save(any(User.class));
     }
 

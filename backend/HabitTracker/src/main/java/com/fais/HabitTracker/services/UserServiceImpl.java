@@ -4,7 +4,7 @@ import com.fais.HabitTracker.dto.UserRequestDTO;
 import com.fais.HabitTracker.dto.UserResponseDTO;
 import com.fais.HabitTracker.exceptions.UserNotFoundException;
 import com.fais.HabitTracker.mappers.UserMapper;
-import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.repository.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
@@ -21,28 +21,20 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private static final Pattern VALID_USERNAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_.-]{3,20}$");
-    private static final int MIN_PASSWORD_LENGTH = 6;
-    private static final int MAX_PASSWORD_LENGTH = 20;
-
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    private void validateInput(String username, String password) {
 
-    }
-
-
-    public Optional<User> registerUser(String username, String password) {
+    public User registerUser(String username, String password) {
         Optional<User> existingUser = userRepository.findByUsername(username);
         if (existingUser.isPresent()) {
-            return Optional.empty();
+            return null;
         }
         User user = new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
-        return Optional.of(userRepository.save(user));
+        return userRepository.save(user);
     }
 
 
@@ -74,44 +66,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDTO updateUser(String id, UserRequestDTO request) {
         Optional<User> byId = userRepository.findById(id);
-        if (byId.isPresent()) {
-            User user = byId.get();
 
-            if (StringUtils.isNotBlank(request.username())) {
-                user.setUsername(request.username());
-            }
-
-            if (StringUtils.isNotBlank(request.password())) {
-                user.setPassword(request.password());
-            }
-
-            return userMapper.mapToResponseDto(user);
-        }
-
-        return null;
+        return updateUserData(byId, request);
     }
 
     @Override
     public UserResponseDTO updateUserByName(String username, UserRequestDTO request) {
-        Optional<User> myuser = userRepository.findByUsername(username);
-        if (myuser.isPresent()) {
-            User user = myuser.get();
+        Optional<User> byUsername = userRepository.findByUsername(username);
 
-            if (StringUtils.isNotBlank(request.username())) {
-                user.setUsername(request.username());
-            }
-
-            if (StringUtils.isNotBlank(request.password())) {
-                user.setPassword(passwordEncoder.encode(request.password())); // <- nie zapomnij o hashowaniu!
-            }
-
-            // ZAPIS DO BAZY:
-            userRepository.save(user);
-
-            return userMapper.mapToResponseDto(user);
-        }
-
-        return null;
+        return updateUserData(byUsername, request);
     }
 
     @Override
@@ -122,10 +85,24 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = byId.get();
-        user.setActive(false);
-        user.setDeletedAt(new Date());
+        user.deactivate();
 
         userRepository.save(user);
+    }
+
+    private UserResponseDTO updateUserData(Optional<User> optionalUser, UserRequestDTO request) {
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+
+            String rawPassword = request.password();
+            String encodedPassword = StringUtils.isNotBlank(rawPassword) ? passwordEncoder.encode(rawPassword) : null;
+
+            user.updateUserDetails(request.username(), encodedPassword);
+
+            return userMapper.mapToResponseDto(user);
+
+        }
+        return null;
     }
 
 

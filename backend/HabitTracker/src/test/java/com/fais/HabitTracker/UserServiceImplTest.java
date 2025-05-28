@@ -1,10 +1,7 @@
 package com.fais.HabitTracker;
 
-import com.fais.HabitTracker.dto.UserRequestDTO;
-import com.fais.HabitTracker.dto.UserResponseDTO;
 import com.fais.HabitTracker.enums.Role;
-import com.fais.HabitTracker.mappers.UserMapper;
-import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.repository.UserRepository;
 import com.fais.HabitTracker.services.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
+import static com.mongodb.assertions.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
@@ -52,9 +50,9 @@ class UserServiceImplTest {
     void shouldNotRegisterUserWhenUsernameExists() {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
 
-        Optional<User> registeredUser = userService.registerUser("testuser", "password123");
+        User user = userService.registerUser("testuser", "password123");
 
-        assertTrue(registeredUser.isEmpty());
+        assertNull(user);
         verify(userRepository, never()).save(any(User.class));
     }
 
