@@ -3,7 +3,7 @@ package com.fais.HabitTracker;
 import com.fais.HabitTracker.enums.Role;
 import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.repository.UserRepository;
-import com.fais.HabitTracker.services.UserServiceImpl;
+import com.fais.HabitTracker.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class UserLogicTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private UserService userService;
 
     private User user;
 
