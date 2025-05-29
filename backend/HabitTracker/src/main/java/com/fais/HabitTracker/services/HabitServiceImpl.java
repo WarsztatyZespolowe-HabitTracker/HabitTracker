@@ -97,41 +97,7 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
         
-        //nowy rekord historii z datą dzisiejszą
-        HabitHistory skippedRecord = HabitHistory.builder()
-                .date(new Date())
-                .completed(false)
-                .skipped(true)
-                .build();
-        
-        // Jeśli lista historii nie istnieje, tworzymy nową
-        if (habit.getHistory() == null) {
-            habit.setHistory(new ArrayList<>());
-        }
-        
-        // Sprawdzamy czy już nie ma dzisiejszej daty
-        LocalDate today = LocalDate.now();
-        boolean hasEntryForToday = habit.getHistory().stream()
-                .anyMatch(h -> {
-                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return historyDate.equals(today);
-                });
-        
-        if (!hasEntryForToday) {
-            habit.getHistory().add(skippedRecord);
-        } else {
-            // Aktualizujemy istniejący wpis na dzisiaj
-            habit.getHistory().stream()
-                .filter(h -> {
-                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return historyDate.equals(today);
-                })
-                .findFirst()
-                .ifPresent(h -> {
-                    h.setCompleted(false);
-                    h.setSkipped(true);
-                });
-        }
+        updateTodayHistoryRecord(habit, false, true);
         
         Habit savedHabit = habitRepository.save(habit);
         
