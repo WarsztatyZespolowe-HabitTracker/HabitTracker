@@ -101,8 +101,7 @@ public class HabitServiceImpl implements HabitService {
         
         Habit savedHabit = habitRepository.save(habit);
         
-        int streak = calculateStreak(userId, habitId);
-        return habitMapper.mapEntityToResponse(savedHabit, streak);
+        return habitMapper.mapEntityToResponse(savedHabit, 0);
     }
 
     @Override
@@ -110,45 +109,43 @@ public class HabitServiceImpl implements HabitService {
         Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
                 .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
         
-        // Tworzymy nowy rekord historii z datą dzisiejszą
-        HabitHistory completedRecord = HabitHistory.builder()
-                .date(new Date())
-                .completed(true)
-                .skipped(false)
-                .build();
+        updateTodayHistoryRecord(habit, true, false);
         
-        // Jeśli lista historii nie istnieje, tworzymy nową
+        Habit savedHabit = habitRepository.save(habit);
+        
+        return habitMapper.mapEntityToResponse(savedHabit, 0);
+    }
+
+    private void updateTodayHistoryRecord(Habit habit, boolean completed, boolean skipped) {
         if (habit.getHistory() == null) {
             habit.setHistory(new ArrayList<>());
         }
         
-        // Sprawdzamy czy już nie ma dzisiejszej daty
         LocalDate today = LocalDate.now();
-        boolean hasEntryForToday = habit.getHistory().stream()
-                .anyMatch(h -> {
-                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return historyDate.equals(today);
-                });
         
-        if (!hasEntryForToday) {
-            habit.getHistory().add(completedRecord);
-        } else {
-            // Aktualizujemy istniejący wpis na dzisiaj
-            habit.getHistory().stream()
-                .filter(h -> {
-                    LocalDate historyDate = h.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    return historyDate.equals(today);
-                })
+        habit.getHistory().stream()
+                .filter(record -> isSameDate(record.getDate(), today))
                 .findFirst()
-                .ifPresent(h -> {
-                    h.setCompleted(true);
-                    h.setSkipped(false);
-                });
-        }
-        
-        Habit savedHabit = habitRepository.save(habit);
-        
-        int streak = calculateStreak(userId, habitId);
-        return habitMapper.mapEntityToResponse(savedHabit, streak);
+                .ifPresentOrElse(
+                    existingRecord -> {
+                        existingRecord.setCompleted(completed);
+                        existingRecord.setSkipped(skipped);
+                    },
+                    () -> {
+                        HabitHistory newRecord = HabitHistory.builder()
+                                .date(new Date())
+                                .completed(completed)
+                                .skipped(skipped)
+                                .build();
+                        habit.getHistory().add(newRecord);
+                    }
+                );
+    }
+
+    private boolean isSameDate(Date date, LocalDate localDate) {
+        LocalDate dateAsLocalDate = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        return dateAsLocalDate.equals(localDate);
     }
 }
