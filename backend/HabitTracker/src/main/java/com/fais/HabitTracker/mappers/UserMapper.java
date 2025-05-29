@@ -2,7 +2,7 @@ package com.fais.HabitTracker.mappers;
 
 import com.fais.HabitTracker.dto.UserRequestDTO;
 import com.fais.HabitTracker.dto.UserResponseDTO;
-import com.fais.HabitTracker.models.User;
+import com.fais.HabitTracker.models.user.User;
 import org.mapstruct.Mapper;
 
 import java.util.List;

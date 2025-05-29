@@ -1,4 +1,4 @@
-package com.fais.HabitTracker.configuration;
+package com.fais.HabitTracker.security;
 
 import com.fais.HabitTracker.constants.RestApi;
 import com.fais.HabitTracker.services.CustomUserDetailsService;
