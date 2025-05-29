@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -84,5 +85,64 @@ public class HabitService {
         }
 
         return streak;
+    }
+
+    public HabitResponseDTO markHabitAsSkipped(String userId, String habitId) {
+        Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
+        
+        updateTodayHistoryRecord(habit, false, true);
+        
+        Habit savedHabit = habitRepository.save(habit);
+        
+        return habitMapper.mapEntityToResponse(savedHabit, 0);
+    }
+
+    public HabitResponseDTO markHabitAsCompleted(String userId, String habitId) {
+        Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
+                .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
+        
+        updateTodayHistoryRecord(habit, true, false);
+        
+        Habit savedHabit = habitRepository.save(habit);
+        
+        return habitMapper.mapEntityToResponse(savedHabit, 0);
+    }
+
+    private void updateTodayHistoryRecord(Habit habit, boolean completed, boolean skipped) {
+        if (habit.getHistory() == null) {
+            habit.setHistory(new ArrayList<>());
+        }
+        
+        LocalDate today = LocalDate.now();
+        
+        habit.getHistory().stream()
+                .filter(record -> isSameDate(record.getDate(), today))
+                .findFirst()
+                .ifPresentOrElse(
+                    existingRecord -> updateExistingRecord(existingRecord, completed, skipped),
+                    () -> createNewRecord(habit, completed, skipped)
+                );
+    }
+
+    private void updateExistingRecord(HabitHistory existingRecord, boolean completed, boolean skipped) {
+        existingRecord.setCompleted(completed);
+        existingRecord.setSkipped(skipped);
+    }
+
+    private void createNewRecord(Habit habit, boolean completed, boolean skipped) {
+        HabitHistory newRecord = HabitHistory.builder()
+                .date(new Date())
+                .completed(completed)
+                .skipped(skipped)
+                .build();
+        habit.getHistory().add(newRecord);
+    }
+
+    private boolean isSameDate(Date date, LocalDate localDate) {
+        LocalDate dateAsLocalDate = date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate();
+        return dateAsLocalDate.equals(localDate);
     }
 }
