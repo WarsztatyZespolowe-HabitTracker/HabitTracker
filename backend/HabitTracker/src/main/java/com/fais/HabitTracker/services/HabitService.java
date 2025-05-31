@@ -155,4 +155,25 @@ public class HabitService {
                 ));
         habitRepository.delete(habit);
     }
+
+    public List<Habit> getHabitsNeedingReminder(String userId) {
+        List<Habit> habits = habitRepository.findByUserId(userId);
+        LocalDate today = LocalDate.now();
+        String todayDay = today.getDayOfWeek().name();
+
+        return habits.stream()
+                .filter(habit -> habit.getReminder() != null && habit.getReminder().isEnabled())
+                .filter(habit -> habit.getReminder().getDaysOfWeek().contains(todayDay))
+                .filter(habit ->
+                        habit.getHistory() == null ||
+                                habit.getHistory().stream().noneMatch(entry ->
+                                        isSameDay(entry.getDate(), today) && entry.isCompleted()
+                                )
+                )
+                .toList();
+    }
+
+    private boolean isSameDay(Date date, LocalDate localDate) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().equals(localDate);
+    }
 }

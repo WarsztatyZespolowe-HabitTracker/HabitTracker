@@ -20,4 +20,5 @@ public class Habit {
     private String userId;
     private List<String> daysOfWeek;
     private List<HabitHistory> history;
+    private Reminder reminder;
 }

@@ -2,6 +2,7 @@ package com.fais.HabitTracker.controllers;
 
 import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
+import com.fais.HabitTracker.models.habit.Habit;
 import com.fais.HabitTracker.services.HabitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,5 +56,13 @@ public class HabitController {
         habitService.deleteHabit(habitId, userId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/with-reminders")
+    public ResponseEntity<List<Habit>> getHabitsWithReminders(Principal principal) {
+        String userId = principal.getName();
+        List<Habit> habits = habitService.getHabitsNeedingReminder(userId);
+        return ResponseEntity.ok(habits);
+    }
+
 
 }
