@@ -7,7 +7,9 @@ import com.fais.HabitTracker.models.habit.Habit;
 import com.fais.HabitTracker.models.habit.HabitHistory;
 import com.fais.HabitTracker.repository.HabitRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -144,5 +146,13 @@ public class HabitService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
         return dateAsLocalDate.equals(localDate);
+    }
+
+    public void deleteHabit(String habitId, String userId) {
+        Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Habit not found or not owned by user"
+                ));
+        habitRepository.delete(habit);
     }
 }

@@ -4,6 +4,7 @@ import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
 import com.fais.HabitTracker.services.HabitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -47,4 +48,12 @@ public class HabitController {
         String userId = principal.getName();
         return habitService.markHabitAsCompleted(userId, habitId);
     }
+
+    @DeleteMapping("/{habitId}")
+    public ResponseEntity<Void> deleteHabit(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        habitService.deleteHabit(habitId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
