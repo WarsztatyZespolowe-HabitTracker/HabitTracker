@@ -42,9 +42,9 @@ export default function EditUserDataPage() {
         data = await res.json();
       }
 
-      setMessage(`Zaktualizowano użytkownika: ${data?.username ?? newUsername}`);
+      setMessage(`User data updated: ${data?.username ?? newUsername}`);
     } catch (err) {
-      setMessage("Błąd aktualizacji. Sprawdź dane logowania.");
+      setMessage("Update error. Check user data.");
       console.error(err);
     }
   };
@@ -54,11 +54,11 @@ export default function EditUserDataPage() {
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <Card className="w-full max-w-md shadow-lg border-0">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">Edytuj dane</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">Edit data</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">Obecna nazwa użytkownika</label>
+              <label className="block text-sm font-medium text-gray-700">Current username</label>
               <Input
                   type="text"
                   placeholder="Username"
@@ -69,7 +69,7 @@ export default function EditUserDataPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Obecne hasło</label>
+              <label className="block text-sm font-medium text-gray-700">Current password</label>
               <Input
                   type="password"
                   placeholder="Password"
@@ -79,7 +79,7 @@ export default function EditUserDataPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nowa nazwa użytkownika</label>
+              <label className="block text-sm font-medium text-gray-700">New username</label>
               <Input
                   type="text"
                   placeholder="New Username"
@@ -90,7 +90,7 @@ export default function EditUserDataPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">Nowe hasło</label>
+              <label className="block text-sm font-medium text-gray-700">New pasword</label>
               <Input
                   type="password"
                   placeholder="New Password"
@@ -101,7 +101,7 @@ export default function EditUserDataPage() {
             </div>
 
             <Button className="w-full" onClick={handleUpdate}>
-              Zapisz zmiany
+              Save
             </Button>
             {message && <p>{message}</p>}
           </CardContent>
