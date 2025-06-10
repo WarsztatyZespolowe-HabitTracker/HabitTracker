@@ -37,7 +37,7 @@ public class HabitService {
         List<Habit> habits = habitRepository.findByUserId(userId);
         return habits.stream()
                 .map(habit -> {
-                    int streak = calculateStreak(userId, habit.getId());
+                    int streak = habit.calculateStreak();
                     return habitMapper.mapEntityToResponse(habit, streak);
                 })
                 .toList();
@@ -50,43 +50,10 @@ public class HabitService {
         List<Habit> habits = habitRepository.findByUserIdAndDaysOfWeekContaining(userId, todayString);
         return habits.stream()
                 .map(habit -> {
-                    int streak = calculateStreak(userId, habit.getId());
+                    int streak = habit.calculateStreak();
                     return habitMapper.mapEntityToResponse(habit, streak);
                 })
                 .toList();
-    }
-
-    public int calculateStreak(String userId, String habitId) {
-        Habit habit = habitRepository.findByIdAndUserId(habitId, userId)
-                .orElseThrow(() -> new IllegalArgumentException("Habit not found"));
-
-        List<HabitHistory> history = habit.getHistory();
-        if (history == null || history.isEmpty()) {
-            return 0; 
-        }
-
-        history = history.stream()
-                .filter(record -> record.isCompleted() || record.isSkipped())
-                .sorted(Comparator.comparing(HabitHistory::getDate).reversed())
-                .toList();
-
-        int streak = 0;
-        LocalDate expectedDate = LocalDate.now();
-
-        for (HabitHistory record : history) {
-            LocalDate recordDate = record.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-            if (recordDate.equals(expectedDate)) {
-                if (record.isCompleted()) {
-                    streak++;
-                }
-                expectedDate = expectedDate.minusDays(1);
-            } else if (recordDate.isBefore(expectedDate)) {
-                break;
-            }
-        }
-
-        return streak;
     }
 
     public HabitResponseDTO markHabitAsSkipped(String userId, String habitId) {
