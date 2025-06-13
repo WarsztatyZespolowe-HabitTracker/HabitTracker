@@ -4,6 +4,9 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Comparator;
 import java.util.List;
 
 @Data
@@ -21,4 +24,35 @@ public class Habit {
     private List<String> daysOfWeek;
     private List<HabitHistory> history;
     private Reminder reminder;
+
+    public int calculateStreak() {
+
+        List<HabitHistory> history = this.history;
+        if (history == null || history.isEmpty()) {
+            return 0;
+        }
+
+        history = history.stream()
+                .filter(record -> record.isCompleted() || record.isSkipped())
+                .sorted(Comparator.comparing(HabitHistory::getDate).reversed())
+                .toList();
+
+        int streak = 0;
+        LocalDate expectedDate = LocalDate.now();
+
+        for (HabitHistory record : history) {
+            LocalDate recordDate = record.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+            if (recordDate.equals(expectedDate)) {
+                if (record.isCompleted()) {
+                    streak++;
+                }
+                expectedDate = expectedDate.minusDays(1);
+            } else if (recordDate.isBefore(expectedDate)) {
+                break;
+            }
+        }
+
+        return streak;
+    }
 }
