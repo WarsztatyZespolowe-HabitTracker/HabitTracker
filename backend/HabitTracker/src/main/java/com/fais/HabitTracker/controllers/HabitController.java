@@ -57,12 +57,35 @@ public class HabitController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/with-reminders")
-    public ResponseEntity<List<Habit>> getHabitsWithReminders(Principal principal) {
+    @PostMapping("/{habitId}/reminder")
+    public ResponseEntity<Void> enableReminder(@PathVariable String habitId, Principal principal) {
         String userId = principal.getName();
-        List<Habit> habits = habitService.getHabitsNeedingReminder(userId);
-        return ResponseEntity.ok(habits);
+        habitService.setReminder(habitId, userId, true);
+        return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{habitId}/reminder")
+    public ResponseEntity<Void> disableReminder(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        habitService.setReminder(habitId, userId, false);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{habitId}/hide")
+    public ResponseEntity<Void> hideHabit(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        habitService.setHidden(habitId, userId, true);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{habitId}/hide")
+    public ResponseEntity<Void> unhideHabit(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        habitService.setHidden(habitId, userId, false);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 }
