@@ -1,30 +1,50 @@
 import React from "react";
-import {createFileRoute} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_dashboard/export")({
     component: ExportPage,
 });
 
-const mockHabits = [
-    { id: "1", name: "Exercise", description: "30 minutes running", category: "Health" },
-    { id: "2", name: "Read", description: "Read 20 pages", category: "Education" },
-];
-
 export function ExportPage() {
-    const handleExport = () => {
-        // Tu zamiast mocka wywołaj API, które zwróci JSON z bazy
-        const dataToExport = mockHabits;
+    const { token } = useAuth();
 
-        // Tworzymy blob i link do pobrania
-        const blob = new Blob([JSON.stringify(dataToExport, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
+    const handleExport = async () => {
+        if (!token) {
+            alert("You must be logged in to export habits.");
+            return;
+        }
 
-        // Tworzymy tymczasowy link, klikamy i usuwamy
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "habits-export.json";
-        a.click();
-        URL.revokeObjectURL(url);
+        try {
+            const tokenObj = JSON.parse(token);
+            const encodedAuth = btoa(`${tokenObj.username}:${tokenObj.password}`);
+
+            const res = await fetch("http://localhost:8090/api/habits", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Basic ${encodedAuth}`,
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to fetch habits");
+            }
+
+            const habits = await res.json();
+
+            // Tworzymy plik JSON do pobrania
+            const blob = new Blob([JSON.stringify(habits, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "habits-export.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            console.error("Export error:", err);
+            alert("Failed to export habits.");
+        }
     };
 
     return (

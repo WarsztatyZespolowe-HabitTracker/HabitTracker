@@ -1,16 +1,17 @@
 import {createFileRoute} from "@tanstack/react-router";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Button} from "@/components/ui/button";
 import {
     PencilIcon,
     Trash2Icon,
     EyeIcon,
     EyeOffIcon,
-    RotateCcwIcon
+    RotateCcwIcon,
+    BellIcon,
 } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
-
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_dashboard/manage")({
     component: ManageHabitsPage,
@@ -20,41 +21,69 @@ type Habit = {
     id: string;
     name: string;
     description: string;
-    repeat: string[]; // dni tygodnia np. ['Mon', 'Wed']
+    repeat: string[];
     category: string;
     hidden: boolean;
+    reminder: boolean;
 };
 
-const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-// --- MOCK DANYCH ---
-const initialHabits: Habit[] = [
-    {
-        id: "1",
-        name: "Exercise",
-        description: "30 minutes running",
-        repeat: ["Mon", "Wed", "Fri"],
-        category: "Health",
-        hidden: false,
-    },
-    {
-        id: "2",
-        name: "Read",
-        description: "Read 20 pages",
-        repeat: ["Tue", "Thu", "Sat"],
-        category: "Education",
-        hidden: false,
-    },
-];
+const daysOfWeek = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
 
 function ManageHabitsPage() {
-    const [habits, setHabits] = useState<Habit[]>(initialHabits);
+    const [habits, setHabits] = useState<Habit[]>([]);
     const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
     const [addingNew, setAddingNew] = useState(false);
     const [confirmAction, setConfirmAction] = useState<{
         id: string;
         type: "reset" | "delete" | null;
     } | null>(null);
+
+    const { token } = useAuth();
+
+    const tokenObj = JSON.parse(token);
+    const tokenString = `${tokenObj.username}:${tokenObj.password}`;
+    const encodedAuth = btoa(tokenString);
+
+    // GET HABITS
+    useEffect(() => {
+        if (!token) return;
+
+        async function fetchHabits() {
+            try {
+                const tokenObj = JSON.parse(token);
+                const tokenString = `${tokenObj.username}:${tokenObj.password}`;
+                const encodedAuth = btoa(tokenString);
+
+                const res = await fetch("http://localhost:8090/api/habits", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Basic ${encodedAuth}`,
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error("Failed to fetch habits");
+                }
+
+                const data = await res.json();
+                console.log("habits data:\n", data);
+
+                setHabits(data.map((h: any) => ({
+                    id: h.id,
+                    name: h.name,
+                    description: h.description,
+                    repeat: h.daysOfWeek,
+                    category: h.category,
+                    hidden: false,
+                    reminder: h.reminder ?? true,
+                })));
+            } catch (error) {
+                console.error("Error fetching habits:", error);
+            }
+        }
+
+        fetchHabits();
+    }, [token]);
 
     // FORM STATE
     const [form, setForm] = useState({
@@ -104,35 +133,60 @@ function ManageHabitsPage() {
     }
 
     // ZAPISZ DANE (dodaj lub edytuj)
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (addingNew) {
-            // DODAWANIE NOWEGO
-            const newHabit: Habit = {
-                id: Date.now().toString(),
-                name: form.name,
-                description: form.description,
-                repeat: form.repeat,
-                category: form.category,
-                hidden: false,
-            };
-            setHabits((prev) => [...prev, newHabit]);
 
-            // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: POST /api/habits
-            // fetch('/api/habits', { method: 'POST', body: JSON.stringify(newHabit), headers: {'Content-Type': 'application/json'} })
-        } else if (editingHabit) {
-            // EDYCJA ISTNIEJĄCEGO
-            setHabits((prev) =>
-                prev.map((h) =>
-                    h.id === editingHabit.id ? {...h, ...form} : h
-                )
-            );
-
-            // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: PUT /api/habits/:id
-            // fetch(`/api/habits/${editingHabit.id}`, { method: 'PUT', body: JSON.stringify(form), headers: {'Content-Type': 'application/json'} })
+        if (!token) {
+            alert("You are not authenticated.");
+            return;
         }
+
+        if (addingNew) {
+            try {
+                const res = await fetch("http://localhost:8090/api/habits", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${encodedAuth}`,
+                    },
+                    body: JSON.stringify({
+                        name: form.name,
+                        description: form.description,
+                        category: form.category,
+                        daysOfWeek: form.repeat,
+                    }),
+                });
+
+                if (!res.ok) {
+                    throw new Error("Failed to create habit");
+                }
+
+                const createdHabit = await res.json();
+
+                setHabits((prev) => [
+                    ...prev,
+                    {
+                        id: createdHabit.id,
+                        name: createdHabit.name,
+                        description: createdHabit.description,
+                        repeat: createdHabit.daysOfWeek,
+                        category: createdHabit.category,
+                        hidden: false,
+                        reminder: createdHabit ?? false,
+                    },
+                ]);
+
+            } catch (error) {
+                console.error("Error creating habit:", error);
+                alert("There was an error creating the habit.");
+            }
+        } else if (editingHabit) {
+            // Edycja habitów – do uzupełnienia w przyszłości
+        }
+
         closeForm();
     }
+
 
     // TOGGLE UKRYCIA NAWYKU
     function toggleHide(id: string) {
@@ -144,6 +198,18 @@ function ManageHabitsPage() {
 
         // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: PATCH /api/habits/:id/hide
         // fetch(`/api/habits/${id}/hide`, { method: 'PATCH' })
+    }
+
+    // TOGGLE REMINDER
+    function toggleReminder(id: string) {
+        setHabits((prev) =>
+            prev.map((h) =>
+                h.id === id ? { ...h, reminder: !h.reminder } : h
+            )
+        );
+
+        // Możesz tu dodać fetch do backendu np.
+        // fetch(`/api/habits/${id}/reminder`, { method: 'PATCH', body: JSON.stringify({ reminder: newValue })})
     }
 
     // ROZPOCZNIJ POTWIERDZENIE RESET/DELETE
@@ -172,13 +238,31 @@ function ManageHabitsPage() {
     }
 
     // WYKONAJ DELETE
-    function handleDelete(id: string) {
-        setHabits((prev) => prev.filter((h) => h.id !== id));
-        setConfirmAction(null);
+    async function handleDelete(id: string) {
+        if (!token) return;
 
-        // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: DELETE /api/habits/:id
-        // fetch(`/api/habits/${id}`, { method: 'DELETE' })
+        try {
+            const res = await fetch(`http://localhost:8090/api/habits/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Basic ${encodedAuth}`,
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to delete habit");
+            }
+
+            // Usunięcie lokalnie po sukcesie
+            setHabits((prev) => prev.filter((h) => h.id !== id));
+        } catch (error) {
+            console.error("Error deleting habit:", error);
+            alert("Failed to delete habit.");
+        } finally {
+            setConfirmAction(null);
+        }
     }
+
 
     return (
         <>
@@ -249,6 +333,15 @@ function ManageHabitsPage() {
                                             <RotateCcwIcon className="mr-1.5"/>
                                             Reset
                                         </Button>
+                                        <Button
+                                            variant={habit.reminder ? "yellow" : "yellowDark"}
+                                            onClick={() => toggleReminder(habit.id)}
+                                            className="flex items-center gap-1"
+                                        >
+                                            <BellIcon className="mr-1" />
+                                            {habit.reminder ? "Remind On" : "Remind Off"}
+                                        </Button>
+
                                         <Button
                                             variant={habit.hidden ? "secondary" : "outline"}
                                             onClick={() => toggleHide(habit.id)}

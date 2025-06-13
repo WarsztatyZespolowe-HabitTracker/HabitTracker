@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CheckIcon, XIcon } from "lucide-react";
-import {useAuth} from "@/lib/auth.tsx";
+import { useAuth } from "@/lib/auth.tsx";
+import { Bell } from "lucide-react"; // dzwonek z lucide-react, jeśli masz tę bibliotekę
 
-export const Route = createFileRoute("/_dashboard/habits")({
+export const Route = createFileRoute("/_dashboard/remind")({
     component: HabitsPage,
 });
 
@@ -12,6 +13,8 @@ function HabitsPage() {
     const [habits, setHabits] = useState<HabitWithStatus[]>([]);
 
     const { token } = useAuth();
+
+    if (!token) return null;
 
     const tokenObj = JSON.parse(token);
     const tokenString = `${tokenObj.username}:${tokenObj.password}`;
@@ -35,6 +38,7 @@ function HabitsPage() {
         category: string;
         hidden: boolean;
         history: HabitHistory[];
+        reminder: boolean;
     };
 
     useEffect(() => {
@@ -45,7 +49,7 @@ function HabitsPage() {
                 const res = await fetch("http://localhost:8090/api/habits/today", {
                     method: "GET",
                     headers: {
-                        "Authorization": `Basic ${encodedAuth}`,
+                        Authorization: `Basic ${encodedAuth}`,
                     },
                 });
 
@@ -75,13 +79,15 @@ function HabitsPage() {
                         description: h.description,
                         repeat: h.daysOfWeek,
                         category: h.category,
-                        hidden: false,
+                        hidden: h.hidden ?? false,
                         history: h.history,
+                        reminder: h.reminder ?? true,
                         status,
                     };
                 });
 
-                setHabits(processedHabits);
+                // filtrujemy, aby wyświetlać tylko te z reminder: true
+                setHabits(processedHabits.filter(habit => habit.reminder));
             } catch (error) {
                 console.error("Error fetching habits:", error);
             }
@@ -95,7 +101,7 @@ function HabitsPage() {
             const res = await fetch(`http://localhost:8090/api/habits/${id}/complete`, {
                 method: "PUT",
                 headers: {
-                    "Authorization": `Basic ${encodedAuth}`,
+                    Authorization: `Basic ${encodedAuth}`,
                 },
             });
 
@@ -118,7 +124,7 @@ function HabitsPage() {
             const res = await fetch(`http://localhost:8090/api/habits/${id}/skip`, {
                 method: "PUT",
                 headers: {
-                    "Authorization": `Basic ${encodedAuth}`,
+                    Authorization: `Basic ${encodedAuth}`,
                 },
             });
 
@@ -138,7 +144,7 @@ function HabitsPage() {
 
     return (
         <>
-            <h1 className="text-3xl font-semibold mb-4">Your Habits for Today</h1>
+            <h1 className="text-3xl font-semibold mb-4">Your Habits for Today With Reminder!</h1>
 
             {habits.length === 0 && <p>No habits for today.</p>}
 
@@ -148,9 +154,12 @@ function HabitsPage() {
                         key={habit.id}
                         className="border border-border rounded p-4 flex justify-between items-center"
                     >
-                        <div>
-                            <h2 className="font-semibold text-lg">{habit.name}</h2>
-                            <p className="text-muted-foreground">{habit.description}</p>
+                        <div className="flex items-center space-x-3">
+                            <Bell className="w-5 h-5 text-gray-500" />
+                            <div>
+                                <h2 className="font-semibold text-lg">{habit.name}</h2>
+                                <p className="text-muted-foreground">{habit.description}</p>
+                            </div>
                         </div>
 
                         <div>
@@ -190,4 +199,3 @@ function HabitsPage() {
         </>
     );
 }
-
