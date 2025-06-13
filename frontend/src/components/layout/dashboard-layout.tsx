@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { SignOutButton } from "@/features/auth/components/sign-up-button";
 import { Link } from "@tanstack/react-router";
-import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useIsAdmin } from '@/features/auth/hooks/useIsAdmin';
 
 import type { PropsWithChildren } from "react";
 

@@ -1,6 +1,6 @@
 import { UsersTable } from "@/features/users/components/users-table";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useIsAdmin } from '@/features/auth/hooks/useIsAdmin';
 
 export const Route = createFileRoute("/_dashboard/users")({
   component: UsersPage,
