@@ -1,11 +1,18 @@
 import { UsersTable } from "@/features/users/components/users-table";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { useIsAdmin } from '@/features/auth/hooks/useIsAdmin';
 
 export const Route = createFileRoute("/_dashboard/users")({
   component: UsersPage,
 });
 
 function UsersPage() {
+  const { isAdmin } = useIsAdmin();
+
+  if (!isAdmin) {
+    return <Navigate to="/habits" />;
+  }
+
   return (
     <>
       <div className="spacy-y-2">
