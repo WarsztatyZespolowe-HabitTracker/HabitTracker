@@ -13,6 +13,7 @@ public interface HabitMapper {
 
     Habit mapRequestToEntity(HabitRequestDTO dto);
 
+    @Mapping(target = "streak", source = "streak")
     @Mapping(target = "reminder", source = "habit.reminder")
     @Mapping(target = "hidden", source = "habit.hidden")
     HabitResponseDTO mapEntityToResponse(Habit habit, int streak);
