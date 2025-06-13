@@ -15,7 +15,11 @@ import { Route as DashboardImport } from './routes/_dashboard'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardUsersImport } from './routes/_dashboard.users'
+import { Route as DashboardStatsImport } from './routes/_dashboard.stats'
+import { Route as DashboardRemindImport } from './routes/_dashboard.remind'
+import { Route as DashboardManageImport } from './routes/_dashboard.manage'
 import { Route as DashboardHabitsImport } from './routes/_dashboard.habits'
+import { Route as DashboardExportImport } from './routes/_dashboard.export'
 import { Route as DashboardEditUserdataImport } from './routes/_dashboard.editUserdata'
 import { Route as AuthSignUpImport } from './routes/_auth.sign-up'
 import { Route as AuthSignInImport } from './routes/_auth.sign-in'
@@ -44,9 +48,33 @@ const DashboardUsersRoute = DashboardUsersImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const DashboardStatsRoute = DashboardStatsImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardRemindRoute = DashboardRemindImport.update({
+  id: '/remind',
+  path: '/remind',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardManageRoute = DashboardManageImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 const DashboardHabitsRoute = DashboardHabitsImport.update({
   id: '/habits',
   path: '/habits',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardExportRoute = DashboardExportImport.update({
+  id: '/export',
+  path: '/export',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -114,11 +142,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardEditUserdataImport
       parentRoute: typeof DashboardImport
     }
+    '/_dashboard/export': {
+      id: '/_dashboard/export'
+      path: '/export'
+      fullPath: '/export'
+      preLoaderRoute: typeof DashboardExportImport
+      parentRoute: typeof DashboardImport
+    }
     '/_dashboard/habits': {
       id: '/_dashboard/habits'
       path: '/habits'
       fullPath: '/habits'
       preLoaderRoute: typeof DashboardHabitsImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/manage': {
+      id: '/_dashboard/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof DashboardManageImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/remind': {
+      id: '/_dashboard/remind'
+      path: '/remind'
+      fullPath: '/remind'
+      preLoaderRoute: typeof DashboardRemindImport
+      parentRoute: typeof DashboardImport
+    }
+    '/_dashboard/stats': {
+      id: '/_dashboard/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof DashboardStatsImport
       parentRoute: typeof DashboardImport
     }
     '/_dashboard/users': {
@@ -147,13 +203,21 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface DashboardRouteChildren {
   DashboardEditUserdataRoute: typeof DashboardEditUserdataRoute
+  DashboardExportRoute: typeof DashboardExportRoute
   DashboardHabitsRoute: typeof DashboardHabitsRoute
+  DashboardManageRoute: typeof DashboardManageRoute
+  DashboardRemindRoute: typeof DashboardRemindRoute
+  DashboardStatsRoute: typeof DashboardStatsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardEditUserdataRoute: DashboardEditUserdataRoute,
+  DashboardExportRoute: DashboardExportRoute,
   DashboardHabitsRoute: DashboardHabitsRoute,
+  DashboardManageRoute: DashboardManageRoute,
+  DashboardRemindRoute: DashboardRemindRoute,
+  DashboardStatsRoute: DashboardStatsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
 }
 
@@ -167,7 +231,11 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/editUserdata': typeof DashboardEditUserdataRoute
+  '/export': typeof DashboardExportRoute
   '/habits': typeof DashboardHabitsRoute
+  '/manage': typeof DashboardManageRoute
+  '/remind': typeof DashboardRemindRoute
+  '/stats': typeof DashboardStatsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -177,7 +245,11 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/editUserdata': typeof DashboardEditUserdataRoute
+  '/export': typeof DashboardExportRoute
   '/habits': typeof DashboardHabitsRoute
+  '/manage': typeof DashboardManageRoute
+  '/remind': typeof DashboardRemindRoute
+  '/stats': typeof DashboardStatsRoute
   '/users': typeof DashboardUsersRoute
 }
 
@@ -189,7 +261,11 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_dashboard/editUserdata': typeof DashboardEditUserdataRoute
+  '/_dashboard/export': typeof DashboardExportRoute
   '/_dashboard/habits': typeof DashboardHabitsRoute
+  '/_dashboard/manage': typeof DashboardManageRoute
+  '/_dashboard/remind': typeof DashboardRemindRoute
+  '/_dashboard/stats': typeof DashboardStatsRoute
   '/_dashboard/users': typeof DashboardUsersRoute
 }
 
@@ -201,7 +277,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/editUserdata'
+    | '/export'
     | '/habits'
+    | '/manage'
+    | '/remind'
+    | '/stats'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -210,7 +290,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/editUserdata'
+    | '/export'
     | '/habits'
+    | '/manage'
+    | '/remind'
+    | '/stats'
     | '/users'
   id:
     | '__root__'
@@ -220,7 +304,11 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_dashboard/editUserdata'
+    | '/_dashboard/export'
     | '/_dashboard/habits'
+    | '/_dashboard/manage'
+    | '/_dashboard/remind'
+    | '/_dashboard/stats'
     | '/_dashboard/users'
   fileRoutesById: FileRoutesById
 }
@@ -266,7 +354,11 @@ export const routeTree = rootRoute
       "filePath": "_dashboard.tsx",
       "children": [
         "/_dashboard/editUserdata",
+        "/_dashboard/export",
         "/_dashboard/habits",
+        "/_dashboard/manage",
+        "/_dashboard/remind",
+        "/_dashboard/stats",
         "/_dashboard/users"
       ]
     },
@@ -282,8 +374,24 @@ export const routeTree = rootRoute
       "filePath": "_dashboard.editUserdata.tsx",
       "parent": "/_dashboard"
     },
+    "/_dashboard/export": {
+      "filePath": "_dashboard.export.tsx",
+      "parent": "/_dashboard"
+    },
     "/_dashboard/habits": {
       "filePath": "_dashboard.habits.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/manage": {
+      "filePath": "_dashboard.manage.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/remind": {
+      "filePath": "_dashboard.remind.tsx",
+      "parent": "/_dashboard"
+    },
+    "/_dashboard/stats": {
+      "filePath": "_dashboard.stats.tsx",
       "parent": "/_dashboard"
     },
     "/_dashboard/users": {

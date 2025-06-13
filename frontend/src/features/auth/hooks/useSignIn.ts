@@ -11,10 +11,27 @@ export function useSignIn() {
 
   return useMutation({
     mutationFn: async (data: AuthCredentials) => {
-      await api.post(ApiRoutes.signIn, data);
+      const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/auth/login`,
+          {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+          }
+      );
 
-      const dataAsKey = JSON.stringify(data);
-      auth.login(dataAsKey);
+      if (!response.ok) {
+          throw new Error("Login failed");
+      }
+
+      const userData = await response.json();
+      
+      const tokenWithRole = JSON.stringify({
+          ...data,
+          role: userData.role || "USER",
+      });
+      
+      auth.login(tokenWithRole);
 
       return navigate({
         to: "/habits",

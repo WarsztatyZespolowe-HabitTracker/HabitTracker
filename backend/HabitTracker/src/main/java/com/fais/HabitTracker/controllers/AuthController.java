@@ -3,9 +3,12 @@ package com.fais.HabitTracker.controllers;
 
 import com.fais.HabitTracker.constants.RestApi;
 import com.fais.HabitTracker.dto.UserRequestDTO;
+import com.fais.HabitTracker.dto.UserResponseDTO;
 import com.fais.HabitTracker.models.user.User;
 import com.fais.HabitTracker.services.UserService;
 import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +34,17 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UserRequestDTO userRequestDTO) {
         boolean isValid = userService.validateUserLogin(userRequestDTO.username(), userRequestDTO.password());
-
-        return isValid ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-    }
+        
+        if (isValid) {
+            UserResponseDTO user = userService.getUserByUsername(userRequestDTO.username());
+            Map<String, Object> response = new HashMap<>();
+            response.put("username", user.username());
+            response.put("role", user.role().name());
+            System.out.println("Sending response: " + response);
+            return ResponseEntity.ok(response);
+        }
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+}
+    
 }
