@@ -51,6 +51,12 @@ public class UserService {
         return byId.map(userMapper::mapToResponseDto).orElse(null);
     }
 
+    public UserResponseDTO getUserByUsername(String username) {
+    Optional<User> byUsername = userRepository.findByUsername(username);
+    return byUsername.map(userMapper::mapToResponseDto)
+        .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
+        }
+
     public UserResponseDTO createUser(UserRequestDTO request) {
         User user = userMapper.mapRequestToEntity(request);
         User savedUser = userRepository.save(user);
