@@ -23,4 +23,7 @@ public class HabitRequestDTO {
     private List<String> daysOfWeek;
 
     private String userId;
+
+    private boolean reminder;
+    private boolean hidden;   
 }

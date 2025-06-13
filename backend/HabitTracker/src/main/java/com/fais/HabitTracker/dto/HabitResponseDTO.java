@@ -16,4 +16,7 @@ public class HabitResponseDTO {
     private List<String> daysOfWeek;
     private int streak;
     private List<HabitHistory> history;
+
+    private boolean reminder;
+    private boolean hidden;
 }
