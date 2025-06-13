@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { SignOutButton } from "@/features/auth/components/sign-up-button";
 import { Link } from "@tanstack/react-router";
+
 import type { PropsWithChildren } from "react";
 
 export function DashboardLayout({ children }: PropsWithChildren) {
@@ -51,6 +52,20 @@ export function DashboardLayout({ children }: PropsWithChildren) {
                             Habits
                         </Link>
                     </Button>
+
+                    <Button variant="ghost" asChild aria-label="Remind">
+                        <Link
+                            to="/remind"
+                            activeProps={{
+                                className:
+                                    "bg-primary hover:bg-primary/90 text-primary-foreground hover:text-primary-foreground",
+                            }}
+                            className="flex items-center"
+                        >
+                            Remind
+                        </Link>
+                    </Button>
+
                     <Button variant="ghost" asChild>
                         <Link
                             to="/manage"

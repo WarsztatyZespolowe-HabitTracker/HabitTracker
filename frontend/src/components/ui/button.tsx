@@ -25,6 +25,10 @@ const buttonVariants = cva(
             "bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-400",
         warning:
             "bg-orange-500 text-white hover:bg-orange-600 focus-visible:ring-orange-400",
+        yellow: "bg-yellow-300 text-yellow-900 hover:bg-yellow-400 focus-visible:ring-yellow-400",
+        yellowDark: "bg-yellow-700 text-yellow-100 hover:bg-yellow-800 focus-visible:ring-yellow-600",
+
+
 
       },
       size: {
