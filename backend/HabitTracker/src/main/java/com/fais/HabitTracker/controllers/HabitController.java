@@ -1,5 +1,6 @@
 package com.fais.HabitTracker.controllers;
 
+import com.fais.HabitTracker.dto.HabitPatchDTO;
 import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
 import com.fais.HabitTracker.models.habit.Habit;
@@ -85,7 +86,20 @@ public class HabitController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{habitId}")
+    public HabitResponseDTO partiallyUpdateHabit(@PathVariable String habitId,
+                                                 @RequestBody HabitPatchDTO request,
+                                                 Principal principal) {
+        String userId = principal.getName();
+        return habitService.partiallyUpdateHabit(habitId, userId, request);
+    }
 
+    @DeleteMapping("/{habitId}/reset")
+    public ResponseEntity<Void> resetHabit(@PathVariable String habitId, Principal principal) {
+        String userId = principal.getName();
+        habitService.resetHabitHistory(habitId, userId);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }
