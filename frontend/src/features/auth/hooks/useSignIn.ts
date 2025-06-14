@@ -12,7 +12,7 @@ export function useSignIn() {
   return useMutation({
     mutationFn: async (data: AuthCredentials) => {
       const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/auth/login`,
+          "http://localhost:8090/api/auth/login",
           {
               method: "POST",
               headers: { "Content-Type": "application/json" },
