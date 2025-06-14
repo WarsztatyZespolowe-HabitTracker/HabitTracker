@@ -1,0 +1,20 @@
+spring:
+  data:
+    mongodb:
+      database: testdb
+      port: 27017
+      host: localhost
+
+  main:
+    allow-bean-definition-overriding: true
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration # tylko jeśli używasz własnej konfiguracji embedded MongoDB
+
+logging:
+  level:
+    root: WARN
+    org.springframework.test.context: INFO
+
+server:
+  port: 0
