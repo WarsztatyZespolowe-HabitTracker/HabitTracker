@@ -73,7 +73,7 @@ export function UsersTable() {
       const encodedAuth = btoa(`${tokenObj.username}:${tokenObj.password}`);
 
       const response = await fetch(
-        "http://localhost:8090/api/admin/users/${userId}",
+        `http://localhost:8090/api/admin/users/${userId}`,
         {
           method: "DELETE",
           headers: {
@@ -81,6 +81,7 @@ export function UsersTable() {
           },
         }
       );
+
 
       if (!response.ok) {
         throw new Error(`Failed to delete user: ${response.statusText}`);
