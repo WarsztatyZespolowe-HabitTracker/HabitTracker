@@ -36,7 +36,7 @@ export function UsersTable() {
         const encodedAuth = btoa(`${tokenObj.username}:${tokenObj.password}`);
 
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/admin/users`,
+          "http://localhost:8090/api/admin/users",
           {
             headers: {
               Authorization: `Basic ${encodedAuth}`,
@@ -73,7 +73,7 @@ export function UsersTable() {
       const encodedAuth = btoa(`${tokenObj.username}:${tokenObj.password}`);
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/admin/users/${userId}`,
+        "http://localhost:8090/api/admin/users/${userId}",
         {
           method: "DELETE",
           headers: {
