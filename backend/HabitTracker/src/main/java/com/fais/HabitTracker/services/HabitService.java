@@ -148,6 +148,7 @@ public class HabitService {
         if (dto.getName() != null) habit.setName(dto.getName());
         if (dto.getDescription() != null) habit.setDescription(dto.getDescription());
         if (dto.getCategory() != null) habit.setCategory(dto.getCategory());
+        if (dto.getDaysOfWeek() != null) habit.setDaysOfWeek(dto.getDaysOfWeek());
 
         habitRepository.save(habit);
 

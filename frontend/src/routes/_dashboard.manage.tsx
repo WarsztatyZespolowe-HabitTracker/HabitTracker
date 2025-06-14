@@ -66,7 +66,6 @@ function ManageHabitsPage() {
                 }
 
                 const data = await res.json();
-                console.log("habits data:\n", data);
 
                 setHabits(data.map((h: any) => ({
                     id: h.id,
@@ -74,8 +73,8 @@ function ManageHabitsPage() {
                     description: h.description,
                     repeat: h.daysOfWeek,
                     category: h.category,
-                    hidden: false,
-                    reminder: h.reminder ?? true,
+                    hidden: h.hidden,
+                    reminder: h.reminder,
                 })));
             } catch (error) {
                 console.error("Error fetching habits:", error);
@@ -132,6 +131,8 @@ function ManageHabitsPage() {
         });
     }
 
+
+
     // ZAPISZ DANE (dodaj lub edytuj)
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -171,8 +172,8 @@ function ManageHabitsPage() {
                         description: createdHabit.description,
                         repeat: createdHabit.daysOfWeek,
                         category: createdHabit.category,
-                        hidden: false,
-                        reminder: createdHabit ?? false,
+                        hidden: createdHabit.hidden,
+                        reminder: createdHabit.reminder,
                     },
                 ]);
 
@@ -181,36 +182,106 @@ function ManageHabitsPage() {
                 alert("There was an error creating the habit.");
             }
         } else if (editingHabit) {
-            // Edycja habitów – do uzupełnienia w przyszłości
+            try {
+                const res = await fetch(`http://localhost:8090/api/habits/${editingHabit.id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Basic ${encodedAuth}`,
+                    },
+                    body: JSON.stringify({
+                        name: form.name,
+                        description: form.description,
+                        category: form.category,
+                        daysOfWeek: form.repeat,
+                    }),
+                });
+
+                if (!res.ok) {
+                    throw new Error("Failed to update habit");
+                }
+
+                const updatedHabit = await res.json();
+
+                setHabits((prev) =>
+                    prev.map((h) =>
+                        h.id === updatedHabit.id
+                            ? {
+                                id: updatedHabit.id,
+                                name: updatedHabit.name,
+                                description: updatedHabit.description,
+                                repeat: updatedHabit.daysOfWeek,
+                                category: updatedHabit.category,
+                                hidden: updatedHabit.hidden,
+                                reminder: updatedHabit.reminder,
+                            }
+                            : h
+                    )
+                );
+            } catch (error) {
+                console.error("Error updating habit:", error);
+                alert("There was an error updating the habit.");
+            }
         }
+
 
         closeForm();
     }
 
 
     // TOGGLE UKRYCIA NAWYKU
-    function toggleHide(id: string) {
-        setHabits((prev) =>
-            prev.map((h) =>
-                h.id === id ? {...h, hidden: !h.hidden} : h
-            )
-        );
+    async function toggleHide(id: string) {
+        const habit = habits.find(h => h.id === id);
+        if (!habit || !token) return;
 
-        // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: PATCH /api/habits/:id/hide
-        // fetch(`/api/habits/${id}/hide`, { method: 'PATCH' })
+        const method = habit.hidden ? "DELETE" : "POST";
+
+        try {
+            await fetch(`http://localhost:8090/api/habits/${id}/hide`, {
+                method,
+                headers: {
+                    "Authorization": `Basic ${encodedAuth}`,
+                },
+            });
+
+            setHabits((prev) =>
+                prev.map((h) =>
+                    h.id === id ? { ...h, hidden: !h.hidden } : h
+                )
+            );
+        } catch (error) {
+            console.error("Error toggling hidden status:", error);
+            alert("Failed to toggle hidden state.");
+        }
     }
+
 
     // TOGGLE REMINDER
-    function toggleReminder(id: string) {
-        setHabits((prev) =>
-            prev.map((h) =>
-                h.id === id ? { ...h, reminder: !h.reminder } : h
-            )
-        );
+    async function toggleReminder(id: string) {
+        const habit = habits.find(h => h.id === id);
+        if (!habit || !token) return;
 
-        // Możesz tu dodać fetch do backendu np.
-        // fetch(`/api/habits/${id}/reminder`, { method: 'PATCH', body: JSON.stringify({ reminder: newValue })})
+        const method = habit.reminder ? "DELETE" : "POST";
+
+        try {
+            await fetch(`http://localhost:8090/api/habits/${id}/reminder`, {
+                method,
+                headers: {
+                    "Authorization": `Basic ${encodedAuth}`,
+                },
+            });
+
+            setHabits((prev) =>
+                prev.map((h) =>
+                    h.id === id ? { ...h, reminder: !h.reminder } : h
+                )
+            );
+        } catch (error) {
+            console.error("Error toggling reminder:", error);
+            alert("Failed to toggle reminder.");
+        }
     }
+
 
     // ROZPOCZNIJ POTWIERDZENIE RESET/DELETE
     function startConfirm(id: string, type: "reset" | "delete") {
@@ -222,20 +293,30 @@ function ManageHabitsPage() {
         setConfirmAction(null);
     }
 
-    // WYKONAJ RESET - tu mock: np. resetuje "ukrycie" i inne dane na domyślne
-    function handleReset(id: string) {
-        // Mock reset - tylko przykład
-        setHabits((prev) =>
-            prev.map((h) =>
-                h.id === id ? {...h, hidden: false} : h
-            )
-        );
+    // WYKONAJ RESET
+    async function handleReset(id: string) {
+        if (!token) return;
 
-        setConfirmAction(null);
+        try {
+            const res = await fetch(`http://localhost:8090/api/habits/${id}/reset`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Basic ${encodedAuth}`,
+                },
+            });
 
-        // TU WYMIEŃ NA KOMUNIKACJĘ Z BACKEND: POST /api/habits/:id/reset
-        // fetch(`/api/habits/${id}/reset`, { method: 'POST' })
+            if (!res.ok) {
+                throw new Error("Failed to reset habit");
+            }
+
+        } catch (error) {
+            console.error("Error resetting habit:", error);
+            alert("Failed to reset habit.");
+        } finally {
+            setConfirmAction(null);
+        }
     }
+
 
     // WYKONAJ DELETE
     async function handleDelete(id: string) {
@@ -339,7 +420,7 @@ function ManageHabitsPage() {
                                             className="flex items-center gap-1"
                                         >
                                             <BellIcon className="mr-1" />
-                                            {habit.reminder ? "Remind On" : "Remind Off"}
+                                            {habit.reminder ? "Disable reminder" : "Enable reminder"}
                                         </Button>
 
                                         <Button
