@@ -79,9 +79,9 @@ function HabitsPage() {
                         description: h.description,
                         repeat: h.daysOfWeek,
                         category: h.category,
-                        hidden: h.hidden ?? false,
+                        hidden: h.hidden,
                         history: h.history,
-                        reminder: h.reminder ?? true,
+                        reminder: h.reminder,
                         status,
                     };
                 });

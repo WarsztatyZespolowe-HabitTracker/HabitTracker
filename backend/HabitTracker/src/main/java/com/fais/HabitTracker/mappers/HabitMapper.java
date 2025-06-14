@@ -16,6 +16,7 @@ public interface HabitMapper {
     @Mapping(target = "streak", source = "streak")
     @Mapping(target = "reminder", source = "habit.reminder")
     @Mapping(target = "hidden", source = "habit.hidden")
+    @Mapping(target = "daysOfWeek", source = "habit.daysOfWeek")
     HabitResponseDTO mapEntityToResponse(Habit habit, int streak);
 
     List<HabitResponseDTO> mapEntityListToResponseList(List<Habit> habits);

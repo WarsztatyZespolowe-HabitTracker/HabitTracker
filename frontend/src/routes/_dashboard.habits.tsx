@@ -10,7 +10,7 @@ export const Route = createFileRoute("/_dashboard/habits")({
 
 function HabitsPage() {
     const [habits, setHabits] = useState<HabitWithStatus[]>([]);
-
+    const [showHidden, setShowHidden] = useState(false);
     const { token } = useAuth();
 
     const tokenObj = JSON.parse(token);
@@ -75,7 +75,7 @@ function HabitsPage() {
                         description: h.description,
                         repeat: h.daysOfWeek,
                         category: h.category,
-                        hidden: false,
+                        hidden: h.hidden,
                         history: h.history,
                         status,
                     };
@@ -138,16 +138,28 @@ function HabitsPage() {
 
     return (
         <>
-            <h1 className="text-3xl font-semibold mb-4">Your Habits for Today</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-3xl font-semibold">Your Habits for Today</h1>
+                <Button
+                    variant="outline"
+                    onClick={() => setShowHidden((prev) => !prev)}
+                >
+                    {showHidden ? "Hide Hidden" : "Show Hidden"}
+                </Button>
+            </div>
 
             {habits.length === 0 && <p>No habits for today.</p>}
 
             <div className="space-y-4">
-                {habits.map((habit) => (
-                    <div
-                        key={habit.id}
-                        className="border border-border rounded p-4 flex justify-between items-center"
-                    >
+                {habits
+                    .filter((habit) => showHidden || !habit.hidden)
+                    .map((habit) => (
+                        <div
+                            key={habit.id}
+                            className={`border border-border rounded p-4 flex justify-between items-center ${
+                                habit.hidden ? "bg-gray-100" : ""
+                            }`}
+                        >
                         <div>
                             <h2 className="font-semibold text-lg">{habit.name}</h2>
                             <p className="text-muted-foreground">{habit.description}</p>
