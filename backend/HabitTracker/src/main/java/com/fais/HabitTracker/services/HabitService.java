@@ -1,5 +1,6 @@
 package com.fais.HabitTracker.services;
 
+import com.fais.HabitTracker.dto.HabitPatchDTO;
 import com.fais.HabitTracker.dto.HabitRequestDTO;
 import com.fais.HabitTracker.dto.HabitResponseDTO;
 import com.fais.HabitTracker.mappers.HabitMapper;
@@ -138,5 +139,30 @@ public class HabitService {
         habit.setHidden(value);
         habitRepository.save(habit);
     }
+
+    public HabitResponseDTO partiallyUpdateHabit(String habitId, String userId, HabitPatchDTO dto) {
+        Habit habit = habitRepository.findById(habitId)
+                .filter(h -> h.getUserId().equals(userId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habit not found"));
+
+        if (dto.getName() != null) habit.setName(dto.getName());
+        if (dto.getDescription() != null) habit.setDescription(dto.getDescription());
+        if (dto.getCategory() != null) habit.setCategory(dto.getCategory());
+
+        habitRepository.save(habit);
+
+        int streak = habit.calculateStreak();
+        return habitMapper.mapEntityToResponse(habit, streak);
+    }
+
+    public void resetHabitHistory(String habitId, String userId) {
+        Habit habit = habitRepository.findById(habitId)
+                .filter(h -> h.getUserId().equals(userId))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Habit not found"));
+
+        habit.setHistory(List.of());
+        habitRepository.save(habit);
+    }
+
 
 }
